@@ -1,15 +1,32 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wurst Runner - DOM Version</title>
-    <link rel="stylesheet" href="css/main.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wurst Runner - DOM Version</title>
+  <link rel="stylesheet" href="css/main.css" />
 </head>
-
 <body>
-    <script src="js/main.js"></script>
-</body>
+  <div id="startScreen">
+    <h1>Wurst Runner</h1>
+    <p>
+      Press <strong>↑</strong> or <strong>Space</strong> to jump<br />
+      Avoid <span class="danger">🍫 Chocolate</span>, collect <span>🌭 Hotdog</span> and <span>🍔 Burger</span>
+    </p>
+    <button id="startBtn">Start Game</button>
+  </div>
 
+  <div id="gameWrapper" class="hidden">
+    <div id="scoreDisplay">Score: 0</div>
+    <div id="player"></div>
+    <div id="obstacleContainer"></div>
+  </div>
+
+  <div id="gameOver" class="hidden">
+    <p id="finalScore">Score: 0</p>
+    <button id="restartBtn">Restart</button>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
 </html>
