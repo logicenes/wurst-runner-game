@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wurst Runner - DOM Version</title>
-  <link rel="stylesheet" href="css/main.css" />
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Pixelify+Sans:wght@400..700&display=swap"
+        rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wurst Runner</title>
+    <link rel="stylesheet" href="css/main.css" />
 </head>
+
 <body>
-  <div id="startScreen">
-    <h1>Wurst Runner</h1>
-    <p>
-      Press <strong>↑</strong> or <strong>Space</strong> to jump<br />
-      Avoid <span class="danger">🍫 Chocolate</span>, collect <span>🌭 Hotdog</span> and <span>🍔 Burger</span>
-    </p>
-    <button id="startBtn">Start Game</button>
-  </div>
+    <div id="startScreen">
+        <h1 class="pixelify-sans-title">Wurst Runner</h1>
+        <p>Press ↑ or Space to jump</p>
+        <button id="startBtn">Start Game</button>
+    </div>
 
-  <div id="gameWrapper" class="hidden">
-    <div id="scoreDisplay">Score: 0</div>
-    <div id="player"></div>
-    <div id="obstacleContainer"></div>
-  </div>
+    <div id="gameWrapper" class="hidden">
+        <div id="scoreDisplay">Score: 0</div>
+        <div id="player"></div>
+        <div id="obstacleContainer"></div>
+    </div>
 
-  <div id="gameOver" class="hidden">
-    <p id="finalScore">Score: 0</p>
-    <button id="restartBtn">Restart</button>
-  </div>
+    <div id="gameOver" class="hidden">
+        <p id="finalScore">Score: 0</p>
+        <button id="restartBtn">Restart</button>
+    </div>
 
-  <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
 </body>
+
 </html>
