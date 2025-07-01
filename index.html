@@ -18,6 +18,14 @@
     <div id="startScreen">
         <h1 class="pixelify-sans-title">Wurst Runner</h1>
         <p>Press ↑ or Space to jump</p>
+        <div class="instructions">
+  <p><span class="good">🍔 Hamburger</span> & <span class="good">🌭 Hotdog</span> = +10 points</p>
+  <p><span class="bad">🍫 Chocolate</span> = Instant death!</p>
+  <p><span class="power">🎾 Tennis Ball</span> = 5 sec speed boost</p>
+  <p><span class="power">⭐ Star</span> = 5 sec invincibility + speed</p>
+  <p class="start-hint">Press <strong>Space</strong> or <strong>Arrow Up</strong> to start!</p>
+</div>
+
         <button id="startBtn">Start Game</button>
     </div>
 
@@ -27,10 +35,11 @@
         <div id="obstacleContainer"></div>
     </div>
 
-    <div id="gameOver" class="hidden">
-        <p id="finalScore">Score: 0</p>
-        <button id="restartBtn">Restart</button>
-    </div>
+  <div id="gameOver" class="hidden">
+    <h1 class="game-over-title">Game Over</h1>
+    <p id="finalScore">Score: 0</p>
+    <button id="restartBtn">Restart</button>
+</div>
 
     <script src="js/main.js" defer></script>
 </body>

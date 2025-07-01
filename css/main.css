@@ -1,16 +1,80 @@
 body {
   margin: 0;
   padding: 0;
-  background: #111;
-  font-family: "Pixelify Sans", sans-serif;
+  background-color: black;
+  font-family: 'Pixelify Sans', sans-serif;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 
-.hidden {
-  display: none !important;
+#gameWrapper {
+  position: relative;
+  width: 1024px;
+  height: 576px;
+  background-image: url('./images/background.png');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  border: 2px solid black;
+  border-radius: 12px;
+  image-rendering: pixelated;
+}
+
+#scoreDisplay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  color: white;
+  z-index: 2;
+}
+
+#player {
+  position: absolute;
+  bottom: 10px;
+  left: 50px;
+  width: 64px;
+  height: 40px;
+  background-image: url('./images/skinny-player.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  z-index: 2;
+}
+
+.obstacle {
+  position: absolute;
+  bottom: 10px;
+  width: 40px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  z-index: 1;
+}
+
+.obstacle.bad {
+  background-image: url('./images/chocolate.png');
+}
+
+.obstacle.good.hotdog {
+  background-image: url('./images/hotdog.png');
+}
+
+.obstacle.good.hamburger {
+  background-image: url('./images/hamburger.png');
+}
+
+.obstacle.tennisball {
+  background-image: url('./images/tennisball.png');
+}
+
+.obstacle.star {
+  background-image: url('./images/star.png');
 }
 
 #startScreen,
@@ -30,63 +94,25 @@ body {
   text-align: center;
 }
 
-#gameWrapper {
-  position: relative;
-  width: 1000px;
-  height: 500px;
-  background: linear-gradient(to top, #444, #222);
-  border: 2px solid #666;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-#scoreDisplay {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 24px;
-  z-index: 1;
-  color: white;
-}
-
-#player {
-  position: absolute;
-  bottom: 20px;
-  left: 50px;
-  width: 64px;
-  height: 40px;
-  background: red;
-  z-index: 1;
-}
-
-.obstacle {
-  position: absolute;
-  bottom: 20px;
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
-  animation: wobble 2s infinite alternate ease-in-out;
-}
-
-@keyframes wobble {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-5px); }
+.hidden {
+  display: none !important;
 }
 
 .pixelify-sans-title {
-  font-family: "Pixelify Sans", sans-serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-weight: 700;
   font-size: 64px;
-  color: #f39810;
-  text-shadow: 2px 2px 0 #f3bd10, 0 0 10px #f3bd10;
+  color: #f39810; /* Hauptfarbe */
+  text-shadow:
+    2px 2px 0 #f3bd10, /* Zweiter Orangeton */
+    0 0 10px #f3bd10;
   letter-spacing: 2px;
   margin-bottom: 20px;
 }
 
 button {
-  font-family: "Pixelify Sans", sans-serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-weight: 700;
-  letter-spacing: 1px;
   font-size: 20px;
   padding: 10px 20px;
   cursor: pointer;
@@ -99,4 +125,58 @@ button {
 
 button:hover {
   background: #666;
+}
+.instructions {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px 30px;
+  border-radius: 12px;
+  color: white;
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 500px;
+  text-align: left;
+}
+
+.instructions p {
+  margin: 8px 0;
+}
+
+.instructions .good {
+  color: #6df56d;
+  font-weight: bold;
+}
+
+.instructions .bad {
+  color: #ff6961; 
+  font-weight: bold;
+}
+
+.instructions .power {
+  color: #f3bd10;
+  font-weight: bold;
+}
+
+.start-hint {
+  margin-top: 15px;
+  font-size: 18px;
+  color: #ccc;
+  font-style: italic;
+}
+
+.game-over-title {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 700;
+  font-size: 64px;
+  color: #e03e26; /* kräftiges Rot */
+  text-shadow:
+    2px 2px 0 #ff8c69, /* Korall-Schatten */
+    0 0 10px #ff8c69;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+#finalScore {
+  font-size: 28px;
+  color: white;
+  margin-bottom: 20px;
 }
