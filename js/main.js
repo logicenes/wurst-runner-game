@@ -20,8 +20,7 @@ muteBtn.addEventListener('click', () => {
   bgMusic.muted = muted;
   jumpSound.muted = muted;
   itemSound.muted = muted;
-
-  muteBtn.textContent = muted ? "🔇 Muted" : "🔈 Sound On";
+  muteBtn.textContent = muted ? "🔇 Sound Off" : "🔈 Sound On";
 });
 
 let score = 0;
@@ -79,21 +78,27 @@ window.addEventListener('keydown', e => {
   }
 });
 
+// ➕ Touch support
+document.addEventListener('touchstart', () => {
+  if (gameRunning) {
+    jump();
+  } else if (!gameRunning && !startScreen.classList.contains('hidden')) {
+    startGame();
+  }
+});
+
+gameWrapper.addEventListener('touchstart', () => {
+  if (gameRunning) jump();
+});
+
 function jump() {
   if (!jumping) {
     velocity = 12;
     jumping = true;
     if (!muted) {
       jumpSound.currentTime = 0;
-      jumpSound.play().catch(e => console.warn("Jump sound error:", e));
+      jumpSound.play();
     }
-  }
-}
-
-function playItemSound() {
-  if (!muted && itemSound) {
-    itemSound.currentTime = 0;
-    itemSound.play().catch(e => console.warn("Item sound error:", e));
   }
 }
 
@@ -130,20 +135,20 @@ function updateObstacles(dt) {
           playerRect.bottom < obsRect.top ||
           playerRect.top > obsRect.bottom)) {
       const type = obs.el.dataset.type;
-
       if (type === 'bad' && !isInvincible) return endGame();
-      if (type === 'good') {
+      if (type === 'good' && !muted) {
+        itemSound.currentTime = 0;
+        itemSound.play();
         score += 10;
-        playItemSound();
       }
       if (type === 'speed') {
         activateSpeedBoost();
-        playItemSound();
+        if (!muted) itemSound.play();
       }
       if (type === 'star') {
         activateInvincibility();
         activateSpeedBoost();
-        playItemSound();
+        if (!muted) itemSound.play();
       }
 
       obs.el.remove();
@@ -226,14 +231,4 @@ function activateInvincibility() {
     isInvincible = false;
     player.style.opacity = '1';
   }, 5000);
-  
-  // Support for touch on mobile
-window.addEventListener('touchstart', () => {
-  if (gameRunning) {
-    jump();
-  } else if (!gameRunning && startScreen.classList.contains('hidden') === false) {
-    startGame();
-  }
-});
-
 }
