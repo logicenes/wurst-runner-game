@@ -1,6 +1,6 @@
 {
   "name": "Wurst Runner",
-  "short_name": "Wurst",
+  "short_name": "WurstRunner",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
