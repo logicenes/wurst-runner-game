@@ -17,9 +17,9 @@ let muted = false;
 
 muteBtn.addEventListener('click', () => {
   muted = !muted;
-  [bgMusic, jumpSound, itemSound].forEach(audio => {
-    if (audio) audio.muted = muted;
-  });
+  bgMusic.muted = muted;
+  jumpSound.muted = muted;
+  itemSound.muted = muted;
   muteBtn.textContent = muted ? "🔇 Sound Off" : "🔈 Sound On";
 });
 
@@ -36,7 +36,6 @@ let gameSpeed = 4;
 let isSpeedBoostActive = false;
 let isInvincible = false;
 let obstacles = [];
-let lastSpecialScore = 0;
 
 function startGame() {
   score = 0;
@@ -52,18 +51,14 @@ function startGame() {
   gameWrapper.classList.remove('hidden');
   startScreen.classList.add('hidden');
   lastTime = performance.now();
-
-  if (bgMusic) {
-    bgMusic.volume = 0.25;
-    if (!muted) bgMusic.play();
-  }
-
+  bgMusic.volume = 0.25;
+  if (!muted) bgMusic.play();
   requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
   gameRunning = false;
-  if (bgMusic) bgMusic.pause();
+  bgMusic.pause();
   finalScore.textContent = 'Score: ' + score;
   gameOver.classList.remove('hidden');
   gameWrapper.classList.add('hidden');
@@ -76,9 +71,7 @@ restartBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('keydown', e => {
-  if ((e.code === 'Space' || e.code === 'ArrowUp') && gameRunning) {
-    jump();
-  }
+  if ((e.code === 'Space' || e.code === 'ArrowUp') && gameRunning) jump();
 });
 
 window.addEventListener('touchstart', e => {
@@ -89,7 +82,7 @@ function jump() {
   if (!jumping) {
     velocity = 12;
     jumping = true;
-    if (!muted && jumpSound) {
+    if (!muted) {
       jumpSound.currentTime = 0;
       jumpSound.play();
     }
@@ -124,13 +117,10 @@ function updateObstacles(dt) {
     const playerRect = player.getBoundingClientRect();
     const obsRect = obs.el.getBoundingClientRect();
 
-    if (!(playerRect.right < obsRect.left ||
-          playerRect.left > obsRect.right ||
-          playerRect.bottom < obsRect.top ||
-          playerRect.top > obsRect.bottom)) {
+    if (!(playerRect.right < obsRect.left || playerRect.left > obsRect.right ||
+      playerRect.bottom < obsRect.top || playerRect.top > obsRect.bottom)) {
 
       const type = obs.el.dataset.type;
-
       if (type === 'bad' && !isInvincible) return endGame();
       if (type === 'good') score += 10;
       if (type === 'speed') activateSpeedBoost();
@@ -139,7 +129,7 @@ function updateObstacles(dt) {
         activateSpeedBoost();
       }
 
-      if (!muted && itemSound) {
+      if (!muted) {
         itemSound.currentTime = 0;
         itemSound.play();
       }
@@ -157,22 +147,11 @@ function updateObstacles(dt) {
 }
 
 function spawnSpecialItem() {
-  const mod100 = score >= 100 && score % 100 === 0 && score !== lastSpecialScore;
-  const mod50 = score >= 50 && score % 50 === 0 && score !== lastSpecialScore;
   const alreadySpecial = document.querySelector('.star, .tennisball');
-
   if (alreadySpecial) return false;
 
-  if (mod100) {
-    spawnObstacle('star');
-    lastSpecialScore = score;
-    return true;
-  }
-  if (mod50) {
-    spawnObstacle('tennisball');
-    lastSpecialScore = score;
-    return true;
-  }
+  if (score >= 100 && score % 100 === 0) return spawnObstacle('star'), true;
+  if (score >= 50 && score % 50 === 0) return spawnObstacle('tennisball'), true;
 
   return false;
 }
@@ -189,10 +168,8 @@ function spawnObstacle(type) {
   el.style.right = '-40px';
 
   switch (type) {
-    case 'bad':
-      el.classList.add('bad'); el.dataset.type = 'bad'; break;
-    case 'hotdog':
-    case 'hamburger':
+    case 'bad': el.classList.add('bad'); el.dataset.type = 'bad'; break;
+    case 'hotdog': case 'hamburger':
       el.classList.add('good', type); el.dataset.type = 'good'; break;
     case 'tennisball':
       el.classList.add('tennisball'); el.dataset.type = 'speed'; break;
@@ -208,7 +185,6 @@ function gameLoop(ts) {
   if (!gameRunning) return;
   const dt = ts - lastTime;
   lastTime = ts;
-
   updatePlayer(dt);
   updateObstacles(dt);
   requestAnimationFrame(gameLoop);

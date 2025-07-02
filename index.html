@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#f39810" />
-
+  <meta name="theme-color" content="#f39810" />
 </head>
 <body>
   <!-- AUDIO -->
@@ -20,6 +19,7 @@
   <div id="startScreen">
     <h1 class="pixelify-sans-title">Wurst Runner</h1>
     <p>Press ↑ or Space to jump</p>
+    <p id="touchNotice" class="touch-notice hidden">Tap to jump – works best when added to your Home Screen!</p>
     <div class="instructions">
       <p><span class="good">🍔 Hamburger</span> & <span class="good">🌭 Hotdog</span> = +10 points</p>
       <p><span class="bad">🍫 Chocolate</span> = Instant death!</p>
@@ -46,12 +46,18 @@
 
   <script src="js/main.js" defer></script>
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('✅ Service Worker registered'))
-      .catch(err => console.error('❌ Service Worker failed', err));
-  }
-</script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker registered'))
+        .catch(err => console.error('❌ Service Worker failed', err));
+    }
 
+    // Touch info hint
+    window.addEventListener('load', () => {
+      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.getElementById('touchNotice')?.classList.remove('hidden');
+      }
+    });
+  </script>
 </body>
 </html>

@@ -8,7 +8,14 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
-  -webkit-touch-callout: none; /* iOS lange gedrückt halten */
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.hidden {
+  display: none !important;
 }
 
 #gameWrapper {
@@ -95,17 +102,13 @@ body {
   text-align: center;
 }
 
-.hidden {
-  display: none !important;
-}
-
 .pixelify-sans-title {
   font-family: 'Pixelify Sans', sans-serif;
   font-weight: 700;
   font-size: 64px;
-  color: #f39810; /* Hauptfarbe */
+  color: #f39810;
   text-shadow:
-    2px 2px 0 #f3bd10, /* Zweiter Orangeton */
+    2px 2px 0 #f3bd10,
     0 0 10px #f3bd10;
   letter-spacing: 2px;
   margin-bottom: 20px;
@@ -127,6 +130,7 @@ button {
 button:hover {
   background: #666;
 }
+
 .instructions {
   background: rgba(0, 0, 0, 0.6);
   padding: 20px 30px;
@@ -149,7 +153,7 @@ button:hover {
 }
 
 .instructions .bad {
-  color: #ff6961; 
+  color: #ff6961;
   font-weight: bold;
 }
 
@@ -165,25 +169,27 @@ button:hover {
   font-style: italic;
 }
 
+.touch-notice {
+  font-size: 16px;
+  color: #ccc;
+  font-style: italic;
+  margin-top: 10px;
+}
+
 .game-over-title {
   font-family: 'Pixelify Sans', sans-serif;
   font-weight: 700;
   font-size: 64px;
-  color: #e03e26; /* kräftiges Rot */
+  color: #e03e26;
   text-shadow:
-    2px 2px 0 #ff8c69, /* Korall-Schatten */
+    2px 2px 0 #ff8c69,
     0 0 10px #ff8c69;
   margin-bottom: 20px;
   letter-spacing: 2px;
 }
+
 #finalScore {
   font-size: 28px;
   color: white;
   margin-bottom: 20px;
 }
-body, button, #scoreDisplay, #player, .obstacle {
-  user-select: none;
-  -webkit-user-select: none; /* Für Safari / iOS */
-  -ms-user-select: none;
-}
-
