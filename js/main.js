@@ -17,9 +17,9 @@ let muted = false;
 
 muteBtn.addEventListener('click', () => {
   muted = !muted;
-  bgMusic.muted = muted;
-  jumpSound.muted = muted;
-  itemSound.muted = muted;
+  [bgMusic, jumpSound, itemSound].forEach(audio => {
+    if (audio) audio.muted = muted;
+  });
   muteBtn.textContent = muted ? "🔇 Sound Off" : "🔈 Sound On";
 });
 
@@ -36,6 +36,7 @@ let gameSpeed = 4;
 let isSpeedBoostActive = false;
 let isInvincible = false;
 let obstacles = [];
+let lastSpecialScore = 0;
 
 function startGame() {
   score = 0;
@@ -52,15 +53,17 @@ function startGame() {
   startScreen.classList.add('hidden');
   lastTime = performance.now();
 
-  bgMusic.volume = 0.25;
-  if (!muted) bgMusic.play();
+  if (bgMusic) {
+    bgMusic.volume = 0.25;
+    if (!muted) bgMusic.play();
+  }
 
   requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
   gameRunning = false;
-  bgMusic.pause();
+  if (bgMusic) bgMusic.pause();
   finalScore.textContent = 'Score: ' + score;
   gameOver.classList.remove('hidden');
   gameWrapper.classList.add('hidden');
@@ -78,16 +81,7 @@ window.addEventListener('keydown', e => {
   }
 });
 
-// ➕ Touch support
-document.addEventListener('touchstart', () => {
-  if (gameRunning) {
-    jump();
-  } else if (!gameRunning && !startScreen.classList.contains('hidden')) {
-    startGame();
-  }
-});
-
-gameWrapper.addEventListener('touchstart', () => {
+window.addEventListener('touchstart', e => {
   if (gameRunning) jump();
 });
 
@@ -95,7 +89,7 @@ function jump() {
   if (!jumping) {
     velocity = 12;
     jumping = true;
-    if (!muted) {
+    if (!muted && jumpSound) {
       jumpSound.currentTime = 0;
       jumpSound.play();
     }
@@ -134,21 +128,20 @@ function updateObstacles(dt) {
           playerRect.left > obsRect.right ||
           playerRect.bottom < obsRect.top ||
           playerRect.top > obsRect.bottom)) {
+
       const type = obs.el.dataset.type;
+
       if (type === 'bad' && !isInvincible) return endGame();
-      if (type === 'good' && !muted) {
-        itemSound.currentTime = 0;
-        itemSound.play();
-        score += 10;
-      }
-      if (type === 'speed') {
-        activateSpeedBoost();
-        if (!muted) itemSound.play();
-      }
+      if (type === 'good') score += 10;
+      if (type === 'speed') activateSpeedBoost();
       if (type === 'star') {
         activateInvincibility();
         activateSpeedBoost();
-        if (!muted) itemSound.play();
+      }
+
+      if (!muted && itemSound) {
+        itemSound.currentTime = 0;
+        itemSound.play();
       }
 
       obs.el.remove();
@@ -164,13 +157,23 @@ function updateObstacles(dt) {
 }
 
 function spawnSpecialItem() {
-  const mod100 = score >= 100 && score % 100 === 0;
-  const mod50 = score >= 50 && score % 50 === 0;
+  const mod100 = score >= 100 && score % 100 === 0 && score !== lastSpecialScore;
+  const mod50 = score >= 50 && score % 50 === 0 && score !== lastSpecialScore;
   const alreadySpecial = document.querySelector('.star, .tennisball');
+
   if (alreadySpecial) return false;
 
-  if (mod100) return spawnObstacle('star'), true;
-  if (mod50) return spawnObstacle('tennisball'), true;
+  if (mod100) {
+    spawnObstacle('star');
+    lastSpecialScore = score;
+    return true;
+  }
+  if (mod50) {
+    spawnObstacle('tennisball');
+    lastSpecialScore = score;
+    return true;
+  }
+
   return false;
 }
 
