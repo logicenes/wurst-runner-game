@@ -36,12 +36,14 @@ let gameSpeed = 4;
 let isSpeedBoostActive = false;
 let isInvincible = false;
 let obstacles = [];
+let lastPowerScore = 0;
 
 function startGame() {
   score = 0;
   playerBottom = 20;
   velocity = 0;
   jumping = false;
+  lastPowerScore = 0;
   obstacles.forEach(o => o.el.remove());
   obstacles = [];
   scoreDisplay.textContent = 'Score: 0';
@@ -74,7 +76,7 @@ window.addEventListener('keydown', e => {
   if ((e.code === 'Space' || e.code === 'ArrowUp') && gameRunning) jump();
 });
 
-window.addEventListener('touchstart', e => {
+window.addEventListener('touchstart', () => {
   if (gameRunning) jump();
 });
 
@@ -117,8 +119,10 @@ function updateObstacles(dt) {
     const playerRect = player.getBoundingClientRect();
     const obsRect = obs.el.getBoundingClientRect();
 
-    if (!(playerRect.right < obsRect.left || playerRect.left > obsRect.right ||
-      playerRect.bottom < obsRect.top || playerRect.top > obsRect.bottom)) {
+    if (!(playerRect.right < obsRect.left ||
+      playerRect.left > obsRect.right ||
+      playerRect.bottom < obsRect.top ||
+      playerRect.top > obsRect.bottom)) {
 
       const type = obs.el.dataset.type;
       if (type === 'bad' && !isInvincible) return endGame();
@@ -150,8 +154,17 @@ function spawnSpecialItem() {
   const alreadySpecial = document.querySelector('.star, .tennisball');
   if (alreadySpecial) return false;
 
-  if (score >= 100 && score % 100 === 0) return spawnObstacle('star'), true;
-  if (score >= 50 && score % 50 === 0) return spawnObstacle('tennisball'), true;
+  if (score >= 100 && score % 100 === 0 && score !== lastPowerScore) {
+    lastPowerScore = score;
+    spawnObstacle('star');
+    return true;
+  }
+
+  if (score >= 50 && score % 50 === 0 && score !== lastPowerScore) {
+    lastPowerScore = score;
+    spawnObstacle('tennisball');
+    return true;
+  }
 
   return false;
 }
@@ -169,12 +182,10 @@ function spawnObstacle(type) {
 
   switch (type) {
     case 'bad': el.classList.add('bad'); el.dataset.type = 'bad'; break;
-    case 'hotdog': case 'hamburger':
-      el.classList.add('good', type); el.dataset.type = 'good'; break;
-    case 'tennisball':
-      el.classList.add('tennisball'); el.dataset.type = 'speed'; break;
-    case 'star':
-      el.classList.add('star'); el.dataset.type = 'star'; break;
+    case 'hotdog':
+    case 'hamburger': el.classList.add('good', type); el.dataset.type = 'good'; break;
+    case 'tennisball': el.classList.add('tennisball'); el.dataset.type = 'speed'; break;
+    case 'star': el.classList.add('star'); el.dataset.type = 'star'; break;
   }
 
   obstacleContainer.appendChild(el);
