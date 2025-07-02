@@ -8,6 +8,7 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
+  -webkit-touch-callout: none; /* iOS lange gedrückt halten */
 }
 
 #gameWrapper {
@@ -180,3 +181,9 @@ button:hover {
   color: white;
   margin-bottom: 20px;
 }
+body, button, #scoreDisplay, #player, .obstacle {
+  user-select: none;
+  -webkit-user-select: none; /* Für Safari / iOS */
+  -ms-user-select: none;
+}
+
