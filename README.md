@@ -12,4 +12,4 @@ A simple, fun retro-style browser game – jump over chocolate, collect burgers 
 - **🎾 Tennis Ball**: 5 seconds speed boost
 - **⭐ Star**: 5 seconds invincibility + speed
 
----
+---# wurst-runner-game
