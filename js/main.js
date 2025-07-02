@@ -226,4 +226,14 @@ function activateInvincibility() {
     isInvincible = false;
     player.style.opacity = '1';
   }, 5000);
+  
+  // Support for touch on mobile
+window.addEventListener('touchstart', () => {
+  if (gameRunning) {
+    jump();
+  } else if (!gameRunning && startScreen.classList.contains('hidden') === false) {
+    startGame();
+  }
+});
+
 }
