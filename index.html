@@ -1,47 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Pixelify+Sans:wght@400..700&display=swap"
-        rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wurst Runner</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#f39810" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wurst Runner</title>
-    <link rel="stylesheet" href="css/main.css" />
 </head>
-
 <body>
-    <div id="startScreen">
-        <h1 class="pixelify-sans-title">Wurst Runner</h1>
-        <p>Press ↑ or Space to jump</p>
-        <div class="instructions">
-  <p><span class="good">🍔 Hamburger</span> & <span class="good">🌭 Hotdog</span> = +10 points</p>
-  <p><span class="bad">🍫 Chocolate</span> = Instant death!</p>
-  <p><span class="power">🎾 Tennis Ball</span> = 5 sec speed boost</p>
-  <p><span class="power">⭐ Star</span> = 5 sec invincibility + speed</p>
-  <p class="start-hint">Press <strong>Space</strong> or <strong>Arrow Up</strong> to start!</p>
-</div>
+  <!-- AUDIO -->
+  <audio id="bgMusic" src="sounds/background_sound.mp3" loop></audio>
+  <audio id="jumpSound" src="sounds/jump_sound.mp3"></audio>
+  <audio id="itemSound" src="sounds/item-received.mp3"></audio>
 
-        <button id="startBtn">Start Game</button>
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <h1 class="pixelify-sans-title">Wurst Runner</h1>
+    <p>Press ↑ or Space to jump</p>
+    <div class="instructions">
+      <p><span class="good">🍔 Hamburger</span> & <span class="good">🌭 Hotdog</span> = +10 points</p>
+      <p><span class="bad">🍫 Chocolate</span> = Instant death!</p>
+      <p><span class="power">🎾 Tennis Ball</span> = 5 sec speed boost</p>
+      <p><span class="power">⭐ Star</span> = 5 sec invincibility + speed</p>
     </div>
+    <button id="startBtn">Start Game</button>
+    <button id="muteBtn">🔈 Sound On</button>
+  </div>
 
-    <div id="gameWrapper" class="hidden">
-        <div id="scoreDisplay">Score: 0</div>
-        <div id="player"></div>
-        <div id="obstacleContainer"></div>
-    </div>
+  <!-- GAME -->
+  <div id="gameWrapper" class="hidden">
+    <div id="scoreDisplay">Score: 0</div>
+    <div id="player"></div>
+    <div id="obstacleContainer"></div>
+  </div>
 
+  <!-- GAME OVER -->
   <div id="gameOver" class="hidden">
     <h1 class="game-over-title">Game Over</h1>
     <p id="finalScore">Score: 0</p>
     <button id="restartBtn">Restart</button>
-</div>
+  </div>
 
-    <script src="js/main.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('✅ Service Worker registered'))
+      .catch(err => console.error('❌ Service Worker failed', err));
+  }
+</script>
+
 </body>
-
 </html>

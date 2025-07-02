@@ -1,37 +1,42 @@
-// DOM-Elemente
-const startScreen = document.getElementById('startScreen');
 const startBtn = document.getElementById('startBtn');
+const restartBtn = document.getElementById('restartBtn');
+const muteBtn = document.getElementById('muteBtn');
 const gameWrapper = document.getElementById('gameWrapper');
+const startScreen = document.getElementById('startScreen');
+const gameOver = document.getElementById('gameOver');
 const scoreDisplay = document.getElementById('scoreDisplay');
+const finalScore = document.getElementById('finalScore');
 const player = document.getElementById('player');
 const obstacleContainer = document.getElementById('obstacleContainer');
-const gameOver = document.getElementById('gameOver');
-const finalScore = document.getElementById('finalScore');
-const restartBtn = document.getElementById('restartBtn');
 
+const bgMusic = document.getElementById('bgMusic');
+const jumpSound = document.getElementById('jumpSound');
+const itemSound = document.getElementById('itemSound');
 
+let muted = false;
 
-// Initialstatus
-startScreen.classList.remove('hidden');
-gameWrapper.classList.add('hidden');
-gameOver.classList.add('hidden');
+muteBtn.addEventListener('click', () => {
+  muted = !muted;
+  bgMusic.muted = muted;
+  jumpSound.muted = muted;
+  itemSound.muted = muted;
+
+  muteBtn.textContent = muted ? "🔇 Muted" : "🔈 Sound On";
+});
 
 let score = 0;
-let gameRunning = false;
-
 let gravity = 0.4;
 let playerBottom = 20;
 let velocity = 0;
 let jumping = false;
-
-let obstacles = [];
+let gameRunning = false;
+let lastTime = 0;
 let spawnTimer = 0;
 let spawnInterval = 1500;
 let gameSpeed = 4;
-let lastTime = 0;
-
 let isSpeedBoostActive = false;
 let isInvincible = false;
+let obstacles = [];
 
 function startGame() {
   score = 0;
@@ -47,11 +52,16 @@ function startGame() {
   gameWrapper.classList.remove('hidden');
   startScreen.classList.add('hidden');
   lastTime = performance.now();
+
+  bgMusic.volume = 0.25;
+  if (!muted) bgMusic.play();
+
   requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
   gameRunning = false;
+  bgMusic.pause();
   finalScore.textContent = 'Score: ' + score;
   gameOver.classList.remove('hidden');
   gameWrapper.classList.add('hidden');
@@ -64,7 +74,7 @@ restartBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
+  if ((e.code === 'Space' || e.code === 'ArrowUp') && gameRunning) {
     jump();
   }
 });
@@ -73,37 +83,43 @@ function jump() {
   if (!jumping) {
     velocity = 12;
     jumping = true;
+    if (!muted) {
+      jumpSound.currentTime = 0;
+      jumpSound.play().catch(e => console.warn("Jump sound error:", e));
+    }
   }
 }
 
-function updatePlayer(deltaTime) {
-  if (jumping) {
-    velocity -= gravity * (deltaTime / 16.67);
-    playerBottom += velocity * (deltaTime / 16.67);
+function playItemSound() {
+  if (!muted && itemSound) {
+    itemSound.currentTime = 0;
+    itemSound.play().catch(e => console.warn("Item sound error:", e));
+  }
+}
 
+function updatePlayer(dt) {
+  if (jumping) {
+    velocity -= gravity * (dt / 16.67);
+    playerBottom += velocity * (dt / 16.67);
     if (playerBottom <= 20) {
       playerBottom = 20;
-      jumping = false;
       velocity = 0;
+      jumping = false;
     }
-
     player.style.bottom = playerBottom + 'px';
   }
 }
 
-function updateObstacles(deltaTime) {
-  spawnTimer -= deltaTime;
-
+function updateObstacles(dt) {
+  spawnTimer -= dt;
   if (spawnTimer <= 0) {
-    const spawnedSpecial = spawnSpecialItemIfNeeded();
-    if (!spawnedSpecial) {
-      spawnNormalItem();
-    }
+    const special = spawnSpecialItem();
+    if (!special) spawnNormalItem();
     spawnTimer = spawnInterval;
   }
 
   obstacles.forEach((obs, i) => {
-    obs.right += gameSpeed * (deltaTime / 16.67);
+    obs.right += gameSpeed * (dt / 16.67);
     obs.el.style.right = obs.right + 'px';
 
     const playerRect = player.getBoundingClientRect();
@@ -113,18 +129,21 @@ function updateObstacles(deltaTime) {
           playerRect.left > obsRect.right ||
           playerRect.bottom < obsRect.top ||
           playerRect.top > obsRect.bottom)) {
-
       const type = obs.el.dataset.type;
 
-      if (type === 'bad' && !isInvincible) {
-        endGame();
-      } else if (type === 'good') {
+      if (type === 'bad' && !isInvincible) return endGame();
+      if (type === 'good') {
         score += 10;
-      } else if (type === 'speed') {
+        playItemSound();
+      }
+      if (type === 'speed') {
         activateSpeedBoost();
-      } else if (type === 'star') {
+        playItemSound();
+      }
+      if (type === 'star') {
         activateInvincibility();
-        activateSpeedBoost(); // ⭐ Stern macht dich jetzt auch schnell!
+        activateSpeedBoost();
+        playItemSound();
       }
 
       obs.el.remove();
@@ -139,71 +158,51 @@ function updateObstacles(deltaTime) {
   });
 }
 
-function spawnSpecialItemIfNeeded() {
+function spawnSpecialItem() {
+  const mod100 = score >= 100 && score % 100 === 0;
+  const mod50 = score >= 50 && score % 50 === 0;
   const alreadySpecial = document.querySelector('.star, .tennisball');
   if (alreadySpecial) return false;
 
-  const mod100 = score >= 100 && score % 100 === 0;
-  const mod50 = score >= 50 && score % 50 === 0;
-
-  if (mod100) {
-    spawnObstacle('star');
-    return true;
-  } else if (mod50) {
-    spawnObstacle('tennisball');
-    return true;
-  }
-
+  if (mod100) return spawnObstacle('star'), true;
+  if (mod50) return spawnObstacle('tennisball'), true;
   return false;
 }
 
 function spawnNormalItem() {
-  const isBad = Math.random() < 0.5; // 50% Schokolade
-  if (isBad) {
-    spawnObstacle('bad');
-  } else {
-    const type = Math.random() < 0.5 ? 'hotdog' : 'hamburger';
-    spawnObstacle(type);
-  }
+  const isBad = Math.random() < 0.5;
+  if (isBad) spawnObstacle('bad');
+  else spawnObstacle(Math.random() < 0.5 ? 'hotdog' : 'hamburger');
 }
 
 function spawnObstacle(type) {
-  const obs = document.createElement('div');
-  obs.classList.add('obstacle');
-  obs.style.right = '-40px';
+  const el = document.createElement('div');
+  el.classList.add('obstacle');
+  el.style.right = '-40px';
 
   switch (type) {
     case 'bad':
-      obs.classList.add('bad');
-      obs.dataset.type = 'bad';
-      break;
+      el.classList.add('bad'); el.dataset.type = 'bad'; break;
     case 'hotdog':
     case 'hamburger':
-      obs.classList.add('good', type);
-      obs.dataset.type = 'good';
-      break;
+      el.classList.add('good', type); el.dataset.type = 'good'; break;
     case 'tennisball':
-      obs.classList.add('tennisball');
-      obs.dataset.type = 'speed';
-      break;
+      el.classList.add('tennisball'); el.dataset.type = 'speed'; break;
     case 'star':
-      obs.classList.add('star');
-      obs.dataset.type = 'star';
-      break;
+      el.classList.add('star'); el.dataset.type = 'star'; break;
   }
 
-  obstacleContainer.appendChild(obs);
-  obstacles.push({ el: obs, right: -40 });
+  obstacleContainer.appendChild(el);
+  obstacles.push({ el, right: -40 });
 }
 
-function gameLoop(timestamp) {
+function gameLoop(ts) {
   if (!gameRunning) return;
-  const deltaTime = timestamp - lastTime;
-  lastTime = timestamp;
+  const dt = ts - lastTime;
+  lastTime = ts;
 
-  updatePlayer(deltaTime);
-  updateObstacles(deltaTime);
-
+  updatePlayer(dt);
+  updateObstacles(dt);
   requestAnimationFrame(gameLoop);
 }
 
@@ -212,7 +211,6 @@ function activateSpeedBoost() {
   isSpeedBoostActive = true;
   gameSpeed = 7;
   spawnInterval = 1000;
-
   setTimeout(() => {
     gameSpeed = 4;
     spawnInterval = 1500;
@@ -224,10 +222,8 @@ function activateInvincibility() {
   if (isInvincible) return;
   isInvincible = true;
   player.style.opacity = '0.5';
-
   setTimeout(() => {
     isInvincible = false;
     player.style.opacity = '1';
   }, 5000);
 }
-
